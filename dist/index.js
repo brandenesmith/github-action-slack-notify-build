@@ -9991,7 +9991,7 @@ function hasFirstPage (link) {
 const { context } = __webpack_require__(469);
 
 function buildSlackAttachments({ status, color, github }) {
-  const { payload, ref, workflow, eventName } = github.context;
+  const { payload, ref, workflow, eventName, actor } = github.context;
   const { owner, repo } = context.repo;
   const event = eventName;
   const branch = event === 'pull_request' ? payload.pull_request.head.ref : ref.replace('refs/heads/', '');
@@ -10029,6 +10029,11 @@ function buildSlackAttachments({ status, color, github }) {
         {
           title: 'Event',
           value: event,
+          short: true,
+        },
+        {
+          title: 'Author',
+          value: actor,
           short: true,
         },
       ],
