@@ -992,7 +992,7 @@ const { buildSlackAttachments, formatChannelName } = __webpack_require__(543);
       return;
     }
 
-    const attachments = buildSlackAttachments({ status, color, github, message, mention });
+    const { text, attachments } = buildSlackAttachments({ status, color, github, message, mention });
     const channelId = core.getInput('channel_id') || (await lookUpChannelId({ slack, channel }));
 
     if (!channelId) {
@@ -1004,6 +1004,7 @@ const { buildSlackAttachments, formatChannelName } = __webpack_require__(543);
 
     const args = {
       channel: channelId,
+      text,
       attachments,
     };
 
@@ -10014,59 +10015,46 @@ function buildSlackAttachments({ status, color, github, message, mention }) {
           short: true,
         };
 
-  var fields = [
-    {
-      title: 'Action',
-      value: `<https://github.com/${owner}/${repo}/commit/${sha}/checks | ${workflow}>`,
-      short: true,
-    },
-    {
-      title: 'Status',
-      value: status,
-      short: true,
-    },
-    referenceLink,
-    {
-      title: 'Event',
-      value: event,
-      short: true,
-    },
-    {
-      title: 'Author',
-      value: actor,
-      short: true,
-    },
-  ]
+  var text = (message)
+        ? (mention) 
+          ? `<@${JSON.parse(process.env.author_mapping)[actor]}> ${message}\n<https://github.com/${owner}/${repo}/commit/${sha}/checks | ${workflow}> ${status}`
+          : `${message}\n<https://github.com/${owner}/${repo}/commit/${sha}/checks | ${workflow}> ${status}`
+        : `<https://github.com/${owner}/${repo}/commit/${sha}/checks | ${workflow}> ${status}`
 
-  if (message) {
-    if (mention) {
-      const mapping = JSON.parse(process.env.author_mapping);
-
-      fields.push(
-        {
-          value: `<@${mapping[actor]}> ${message}`,
-          short: false
-        }
-      );
-    } else {
-      fields.push(
-        {
-          value: message,
-          short: false,
-        }
-      );
-    }
-  }
-
-  return [
-    {
-      color,
-      fields: fields,
-      footer_icon: 'https://github.githubassets.com/favicon.ico',
-      footer: `<https://github.com/${owner}/${repo} | ${owner}/${repo}>`,
-      ts: Math.floor(Date.now() / 1000),
-    },
-  ];
+  return {
+    text: text,
+    attachments: [
+      {
+        color,
+        fields: [
+          {
+            title: 'Action',
+            value: `<https://github.com/${owner}/${repo}/commit/${sha}/checks | ${workflow}>`,
+            short: true,
+          },
+          {
+            title: 'Status',
+            value: status,
+            short: true,
+          },
+          referenceLink,
+          {
+            title: 'Event',
+            value: event,
+            short: true,
+          },
+          {
+            title: 'Author',
+            value: actor,
+            short: true,
+          },
+        ],
+        footer_icon: 'https://github.githubassets.com/favicon.ico',
+        footer: `<https://github.com/${owner}/${repo} | ${owner}/${repo}>`,
+        ts: Math.floor(Date.now() / 1000),
+      },
+    ],
+  };
 }
 
 module.exports.buildSlackAttachments = buildSlackAttachments;
