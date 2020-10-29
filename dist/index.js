@@ -10017,7 +10017,7 @@ function buildSlackAttachments({ status, color, github, message, mention }) {
 
   var text = (message)
         ? (mention) 
-          ? `<@${JSON.parse(process.env.author_mapping)[actor]}> ${message}\n<https://github.com/${owner}/${repo}/commit/${sha}/checks | ${workflow}> ${status}`
+          ? `<@${JSON.parse(process.env.GITHUB_AUTHOR_TO_SLACK_MAPPING)[actor]}> ${message}\n<https://github.com/${owner}/${repo}/commit/${sha}/checks | ${workflow}> ${status}`
           : `${message}\n<https://github.com/${owner}/${repo}/commit/${sha}/checks | ${workflow}> ${status}`
         : `<https://github.com/${owner}/${repo}/commit/${sha}/checks | ${workflow}> ${status}`
 
