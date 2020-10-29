@@ -9989,8 +9989,9 @@ function hasFirstPage (link) {
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
 const { context } = __webpack_require__(469);
+const core = __webpack_require__(470);
 
-function buildSlackAttachments({ status, color, github }) {
+function buildSlackAttachments({ status, color, github, message, mention }) {
   const { payload, ref, workflow, eventName, actor } = github.context;
   const { owner, repo } = context.repo;
   const event = eventName;
@@ -10011,32 +10012,54 @@ function buildSlackAttachments({ status, color, github }) {
           short: true,
         };
 
+  var fields = [
+    {
+      title: 'Action',
+      value: `<https://github.com/${owner}/${repo}/commit/${sha}/checks | ${workflow}>`,
+      short: true,
+    },
+    {
+      title: 'Status',
+      value: status,
+      short: true,
+    },
+    referenceLink,
+    {
+      title: 'Event',
+      value: event,
+      short: true,
+    },
+    {
+      title: 'Author',
+      value: actor,
+      short: true,
+    },
+  ]
+
+  if (message) {
+    if (mention) {
+      const mapping = JSON.parse(core.getInput('author_mapping'));
+
+      fields.push(
+        {
+          value: `<@${mapping[actor]}> ${message}`,
+          short: false
+        }
+      );
+    } else {
+      fields.push(
+        {
+          value: message,
+          short: false,
+        }
+      );
+    }
+  }
+
   return [
     {
       color,
-      fields: [
-        {
-          title: 'Action',
-          value: `<https://github.com/${owner}/${repo}/commit/${sha}/checks | ${workflow}>`,
-          short: true,
-        },
-        {
-          title: 'Status',
-          value: status,
-          short: true,
-        },
-        referenceLink,
-        {
-          title: 'Event',
-          value: event,
-          short: true,
-        },
-        {
-          title: 'Author',
-          value: actor,
-          short: true,
-        },
-      ],
+      fields: fields,
       footer_icon: 'https://github.githubassets.com/favicon.ico',
       footer: `<https://github.com/${owner}/${repo} | ${owner}/${repo}>`,
       ts: Math.floor(Date.now() / 1000),
