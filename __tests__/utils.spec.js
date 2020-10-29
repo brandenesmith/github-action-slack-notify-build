@@ -48,7 +48,7 @@ describe('Utils', () => {
     })
 
     it('mention when present', () => {
-      process.env['author_mapping'] = '{ "Codertocat": "U12345678" }'
+      process.env['GITHUB_AUTHOR_TO_SLACK_MAPPING'] = '{ "Codertocat": "U12345678" }'
 
       const { text } = buildSlackAttachments({ status: 'STARTED', color: 'good', github: GITHUB_PUSH_EVENT, message: "Hello World!", mention: true})
 
@@ -56,7 +56,7 @@ describe('Utils', () => {
     })
 
     it ('do not mention when mention false', () => {
-      process.env['author_mapping'] = '{ "Codertocat": "U12345678" }'
+      process.env['GITHUB_AUTHOR_TO_SLACK_MAPPING'] = '{ "Codertocat": "U12345678" }'
 
       const { text } = buildSlackAttachments({ status: 'STARTED', color: 'good', github: GITHUB_PUSH_EVENT, message: "Hello World!", mention: false})
 
