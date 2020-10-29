@@ -115,6 +115,14 @@ The ID of a previous Slack message to update instead of posting a new message. T
 message_id: ${{ steps.<your_first_slack_step_id>.outputs.message_id }}
 ```
 
+### `message_text`
+
+Additional messaging to be displayed in the post.
+
+### `mention`
+
+True if you would like the author mentioned specifically in Slack.
+
 ## Outputs
 
 ### `message_id`

@@ -1,7 +1,8 @@
 const { context } = require('@actions/github');
+const core = require('@actions/core');
 
-function buildSlackAttachments({ status, color, github }) {
-  const { payload, ref, workflow, eventName } = github.context;
+function buildSlackAttachments({ status, color, github, message, mention }) {
+  const { payload, ref, workflow, eventName, actor } = github.context;
   const { owner, repo } = context.repo;
   const event = eventName;
   const branch = event === 'pull_request' ? payload.pull_request.head.ref : ref.replace('refs/heads/', '');
@@ -21,32 +22,47 @@ function buildSlackAttachments({ status, color, github }) {
           short: true,
         };
 
-  return [
-    {
-      color,
-      fields: [
-        {
-          title: 'Action',
-          value: `<https://github.com/${owner}/${repo}/commit/${sha}/checks | ${workflow}>`,
-          short: true,
-        },
-        {
-          title: 'Status',
-          value: status,
-          short: true,
-        },
-        referenceLink,
-        {
-          title: 'Event',
-          value: event,
-          short: true,
-        },
-      ],
-      footer_icon: 'https://github.githubassets.com/favicon.ico',
-      footer: `<https://github.com/${owner}/${repo} | ${owner}/${repo}>`,
-      ts: Math.floor(Date.now() / 1000),
-    },
-  ];
+  var text = (message)
+        ? (mention) 
+          ? `<@${JSON.parse(process.env.author_mapping)[actor]}> ${message}\n<https://github.com/${owner}/${repo}/commit/${sha}/checks | ${workflow}> ${status}`
+          : `${message}\n<https://github.com/${owner}/${repo}/commit/${sha}/checks | ${workflow}> ${status}`
+        : `<https://github.com/${owner}/${repo}/commit/${sha}/checks | ${workflow}> ${status}`
+
+  return {
+    text: text,
+    attachments: [
+      {
+        color,
+        fields: [
+          {
+            title: 'Action',
+            value: `<https://github.com/${owner}/${repo}/commit/${sha}/checks | ${workflow}>`,
+            short: true,
+          },
+          {
+            title: 'Status',
+            value: status,
+            short: true,
+          },
+          referenceLink,
+          {
+            title: 'Event',
+            value: event,
+            short: true,
+          },
+          {
+            title: 'Author',
+            value: actor,
+            short: true,
+          },
+        ],
+        link_names: true,
+        footer_icon: 'https://github.githubassets.com/favicon.ico',
+        footer: `<https://github.com/${owner}/${repo} | ${owner}/${repo}>`,
+        ts: Math.floor(Date.now() / 1000),
+      },
+    ],
+  };
 }
 
 module.exports.buildSlackAttachments = buildSlackAttachments;
