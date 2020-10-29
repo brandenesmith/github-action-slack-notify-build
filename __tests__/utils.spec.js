@@ -47,6 +47,22 @@ describe('Utils', () => {
       expect(text).toEqual('Hello World!\n<https://github.com/voxmedia/github-action-slack-notify-build/commit/abc123/checks | CI> STARTED');
     })
 
+    it('mention when present', () => {
+      process.env['author_mapping'] = '{ "Codertocat": "U12345678" }'
+
+      const { text } = buildSlackAttachments({ status: 'STARTED', color: 'good', github: GITHUB_PUSH_EVENT, message: "Hello World!", mention: true})
+
+      expect(text).toEqual('<@U12345678> Hello World!\n<https://github.com/voxmedia/github-action-slack-notify-build/commit/abc123/checks | CI> STARTED')
+    })
+
+    it ('do not mention when mention false', () => {
+      process.env['author_mapping'] = '{ "Codertocat": "U12345678" }'
+
+      const { text } = buildSlackAttachments({ status: 'STARTED', color: 'good', github: GITHUB_PUSH_EVENT, message: "Hello World!", mention: false})
+
+      expect(text).toEqual('Hello World!\n<https://github.com/voxmedia/github-action-slack-notify-build/commit/abc123/checks | CI> STARTED')
+    })
+
     it('generates a text element', () => {
       const { text } = buildSlackAttachments({ status: 'STARTED', color: 'good', github: GITHUB_PUSH_EVENT });
 
