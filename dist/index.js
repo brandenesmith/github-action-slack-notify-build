@@ -10040,7 +10040,7 @@ function buildSlackAttachments({ status, color, github, message, mention }) {
 
   if (message) {
     if (mention) {
-      const mapping = JSON.parse(core.getInput('author_mapping'));
+      const mapping = JSON.parse(process.env.author_mapping);
 
       fields.push(
         {
