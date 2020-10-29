@@ -23,6 +23,9 @@ inputs:
   message_text:
     description: 'Additional messaging to be displayed in the post.'
     required: false
+  mention:
+    description: 'True if you would like the author mentioned specifically in Slack.'
+    required: false
 outputs:
   message_id:
     description: 'The unique timestamp identifier of the Slack message sent'

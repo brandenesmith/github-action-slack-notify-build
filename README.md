@@ -119,6 +119,10 @@ message_id: ${{ steps.<your_first_slack_step_id>.outputs.message_id }}
 
 Additional messaging to be displayed in the post.
 
+### `mention`
+
+True if you would like the author mentioned specifically in Slack.
+
 ## Outputs
 
 ### `message_id`
